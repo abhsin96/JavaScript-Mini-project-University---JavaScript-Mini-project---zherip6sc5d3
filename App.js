@@ -1,9 +1,10 @@
-
+// DOM elements
 const tiles = Array.from(document.querySelectorAll(".tile"));
 const playderDisplay = document.querySelector(".display-player");
 const resetButton = document.querySelector("#reset");
 const announcer = document.querySelector(".announcer");
 
+// required variables
 const board = ["", "", "", "", "", "", "", "", ""];
 let currentPlayer = "X";
 let isGameActive = true;
@@ -23,17 +24,41 @@ const winnningCombition = [
   [2, 5, 8],
 ];
 
+// iterating on events
+tiles.forEach((tile, index) => {
+  tile.addEventListener("click", () => {
+    userAction(tile, index);
+  });
+});
+
+function userAction(tile, index) {
+  if (isValidAction(tile) && isGameActive) {
+    tile.innerText = currentPlayer;
+    tile.classList.add(`player${currentPlayer}`);
+    updateBoard(index);
+    handleResultValidation();
+    changePlayer();
+  }
+}
+
+function isValidAction(tile) {
+  if (tile.innerText === "X" || tile.innerText === "O") {
+    return false;
+  }
+
+  return true;
+}
+
 function updateBoard(index) {
   board[index] = currentPlayer;
 }
 
 function handleResultValidation() {
   let roundWon = false;
-  for (let i = 0; i <= 7; i++) {
-    const winCondition = winnningCombition[i];
-    const a = board[winCondition[0]];
-    const b = board[winCondition[1]];
-    const c = board[winCondition[2]];
+  for (let i = 0; i < winnningCombition.length; i++) {
+    const a = board[winnningCombition[i][0]];
+    const b = board[winnningCombition[i][1]];
+    const c = board[winnningCombition[i][2]];
 
     if (a === "" || b === "" || c === "") {
       continue;
@@ -74,16 +99,6 @@ function changePlayer() {
   playderDisplay.classList.add(`player${currentPlayer}`);
 }
 
-function userAction(tile, index) {
-  if (isValidAction(tile) && isGameActive) {
-    tile.innerText = currentPlayer;
-    tile.classList.add(`player${currentPlayer}`);
-    updateBoard(index);
-    handleResultValidation();
-    changePlayer();
-  }
-}
-
 function resetBoard() {
   const board = ["", "", "", "", "", "", "", "", ""];
   let isGameActive = true;
@@ -98,19 +113,5 @@ function resetBoard() {
     tile.classList.remove("playerO");
   });
 }
-
-function isValidAction(tile) {
-  if (tile.innerText === "X" || tile.innerText === "O") {
-    return false;
-  }
-
-  return true;
-}
-
-tiles.forEach((tile, index) => {
-  tile.addEventListener("click", () => {
-    userAction(tile, index);
-  });
-});
 
 resetButton.addEventListener("click", resetBoard);
